@@ -1,6 +1,5 @@
 const fs = require("fs");
-const Discord = require("discord.js");
-const { Message, Collection, Client, MessageEmbed } = require("discord.js");
+const { Message, Collection, Client } = require("discord.js");
 
 const { colors, confirmAction, newEmb, rawEmb } = require("./commands/utilities");
 
@@ -34,7 +33,7 @@ process.on("warning", console.warn);
 //==================================================================================================================================================
 
 //Initialize the Commands
-client.commands = new Discord.Collection();
+client.commands = new Collection();
 
 const commandDirectorys = fs
     .readdirSync("./commands").map(name => "./commands/" + name).filter(path => fs.lstatSync(path).isDirectory());
@@ -150,7 +149,7 @@ client.on("message", async message => {
 
 
     if (!cooldowns.has(command.name)) {
-        cooldowns.set(command.name, new Discord.Collection());
+        cooldowns.set(command.name, new Collection());
     }
 
 
@@ -185,10 +184,7 @@ client.on("message", async message => {
         );
         message.channel.send(emb);
 
-        emb = new Discord.MessageEmbed()
-            .setAuthor(message.author.tag, message.author.displayAvatarURL())
-            .setFooter(client.user.tag, client.user.displayAvatarURL())
-            .setTimestamp(new Date());
+        emb = newEmb(msg);
 
         emb
             .setTitle("Fehler")
