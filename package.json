@@ -1,5 +1,5 @@
 {
-  "name": "slix-bestellung-service",
+  "name": "bestellungs-bot",
   "version": "1.0.0",
   "description": "Beschreibung?",
   "main": "index.js",
