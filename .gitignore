@@ -1,0 +1,9 @@
+# Security
+/.env
+/.vscode
+/config.json
+/commands/config.json
+/package-lock.json
+
+# Node Modules
+/node_modules
