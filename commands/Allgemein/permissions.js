@@ -1,71 +1,55 @@
 
-const { Message } = require('discord.js');
+const { Message, Permissions } = require('discord.js');
 const { newEmb, emotes } = require('../utilities');
 
 module.exports = {
-    name: 'Permissions',
-    syntax: 'permissions',
-    args: false,
-    description: 'Zeigt dir alle Berechtigungen die ich auf diesem Server besitze',
-    commands: ['permissions', 'perm'],
+  name: 'Permissions',
+  syntax: 'permissions',
+  args: false,
+  description: 'Zeigt dir alle Berechtigungen die ich auf diesem Server besitze',
+  commands: ['permissions', 'perm'],
 
-    /**
-     *@document
-     * @this
-     * @param {Message} msg Nachricht in dem der Befehl geschickt wurde
-     * @param {String[]} args Argumente die im Befehl mitgeliefert wurden
-     */
-    execute(msg) {
-    let emb = newEmb(msg)
-        
-    let user = msg.client.user;
-    var member = msg.guild.member(user);
+  /**
+   *@document
+   * @this
+   * @param {Message} msg Nachricht in dem der Befehl geschickt wurde
+   * @param {String[]} args Argumente die im Befehl mitgeliefert wurden
+   */
+  execute(msg, args) {
+    let emb = newEmb(msg).setTitle("Berechtigungen");
 
-    if (member.permissions.has('ADMINISTRATOR')) {a = emotes.true} else {a = emotes.false}
-    if (member.permissions.has('CREATE_INSTANT_INVITE')) {b = emotes.true} else {b = emotes.false}
-    if (member.permissions.has('KICK_MEMBERS')) {c = emotes.true} else {c = emotes.false}
-    if (member.permissions.has('BAN_MEMBERS')) {d = emotes.true} else {d = emotes.false}
-    if (member.permissions.has('ADD_REACTION')) {e = emotes.true} else {e = emotes.false}
+    var me = msg.guild.me,
+      all = msg.guild.owner.permissions.toArray(),
+      text = "",
+      tile_size = isNaN(Number(args[0])) ? 5 : Number(args[0]),
+      tile_count = all.length % tile_size;
 
-    if (member.permissions.has('MANAGE_CHANNELS')) {f = emotes.true} else {f = emotes.false}
-    if (member.permissions.has('MANAGE_MESSAGES')) {g = emotes.true} else {g = emotes.false}
-    if (member.permissions.has('MENTION_EVERYONE')) {h = emotes.true} else {h = emotes.false}
-
-    if (member.permissions.has('CONNECT')) {i = emotes.true} else {i = emotes.false}
-    if (member.permissions.has('SPEAK')) {j = emotes.true} else {j = emotes.false}
-    if (member.permissions.has('MUTE_MEMBERS')) {k = emotes.true} else {k = emotes.false}
-
-    if (member.permissions.has('DEAFEN_MEMBERS')) {l = emotes.true} else {l = emotes.false}
-    if (member.permissions.has('MOVE_MEMBERS')) {m = emotes.true} else {m = emotes.false}
-    if (member.permissions.has('MANAGE_NICKNAMES')) {n = emotes.true} else {n = emotes.false}
-    if (member.permissions.has('MANAGE_ROLES_OR_PERMISSIONS')) {o = emotes.true} else {o = emotes.false}
-
-
-
-
-      emb.setTitle("Berechtigungen")
-    
-      .addField("**ADMINISTRATOR**", a)
-      .addField("**CREATE_INSTANT_INVITE**", b)
-      .addField("**KICK_MEMBERS**", c)
-      .addField("**BAN_MEMBERS**", d)
-      .addField("**ADD_REACTIONS**", e)
-      
-      .addField("**MANAGE_CHANNELS**", f)
-      .addField("**MANAGE_MESSAGES**", g)
-      .addField("**MENTION_EVERYONE**", h)
-
-      .addField("**CONNECT**", i)
-      .addField("**SPEAK**", j)
-      .addField("**MUTE_MEMBERS**", k)
-
-      .addField("**DEAFEN_MEMBERS**", l)
-      .addField("** MOVE_MEMBERS**", m)
-      .addField("**MANAGE_NICKNAMES**", n)
-      .addField("**MANAGE_ROLES_OR_PERMISSIONS**", o) 
-
-    msg.channel.send(emb) 
-      
-        
+    if (tile_count === 0) {
+      tile_count = all.length / tile_size
+    } else {
+      tile_count = Math.floor(all.length / tile_size) + 1;
     }
+
+    for (let x = 0; x < tile_count; x++) {
+      for (let y = 0; y < tile_size; y++) {
+        let pos = (x * tile_size) + y;
+        if (pos > all.length-1) continue;
+        let perm = all[pos];
+
+        if (me.permissions.has(perm)) {
+          text += emotes.true +  "`" + perm.toString() + "`";
+        } else {
+          text += emotes.false + "`" + perm.toString() + "`";
+        }
+
+        text += "\n"; //New Line
+      }
+      emb.addField('\u200b', text, true);
+      text = "";//Reset
+    }
+
+    emb.setDescription(text);
+
+    msg.channel.send(emb);
+  }
 };
